@@ -27,12 +27,16 @@ export default function ArticuloClient() {
     const handleCreate = async (event) => {
         event.preventDefault();
         try {
-            const newArticulo = await ArticuloServer.createArticulo(titulo, cuerpo, autor);
-            setArticulos([...articulos, newArticulo]);
-            // Limpiar los campos después de la creación
-            setTitulo('');
-            setCuerpo('');
-            setAutor('');
+            const response = await ArticuloServer.createArticulo(titulo, cuerpo, autor);
+            if (response.success) {
+                setArticulos([...articulos, response.articulo]);
+                // Limpiar los campos después de la creación
+                setTitulo('');
+                setCuerpo('');
+                setAutor('');
+            } else {
+                console.error('Error al crear el artículo:', response.message);
+            }
         } catch (error) {
             console.error('Error al crear el artículo:', error);
         }
@@ -42,16 +46,18 @@ export default function ArticuloClient() {
         event.preventDefault();
         if (isEditing && editingId) {
             try {
-                const updatedArticulo = await ArticuloServer.updateArticulo(editingId, titulo, cuerpo, autor);
-                if (updatedArticulo && updatedArticulo.id) {
-                    setArticulos(articulos.map(art => art.id === editingId ? updatedArticulo : art));
+                const response = await ArticuloServer.updateArticulo(editingId, titulo, cuerpo, autor);
+                if (response.success) {
+                    setArticulos(articulos.map(art => art.id === editingId ? response.articulo : art));
+                    // Restablecer el formulario y salir del modo de edición
+                    setTitulo('');
+                    setCuerpo('');
+                    setAutor('');
+                    setIsEditing(false);
+                    setEditingId(null);
+                } else {
+                    console.error('Error al actualizar el artículo:', response.message);
                 }
-                // Restablecer el formulario y salir del modo de edición
-                setTitulo('');
-                setCuerpo('');
-                setAutor('');
-                setIsEditing(false);
-                setEditingId(null);
             } catch (error) {
                 console.error('Error al actualizar el artículo:', error);
             }
