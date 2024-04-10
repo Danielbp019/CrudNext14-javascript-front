@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Table, Container } from 'react-bootstrap';
+import { Button, Form, Table, Modal } from 'react-bootstrap';
 import ArticuloServer from './ArticuloServer';
 
 export default function ArticuloClient() {
@@ -82,7 +82,7 @@ export default function ArticuloClient() {
     };
 
     return (
-        <Container fluid>
+        <div>
             <Form onSubmit={isEditing ? handleUpdate : handleCreate}>
                 <Form.Group className="mb-3" controlId="formTitulo">
                     <Form.Label>Título</Form.Label>
@@ -120,35 +120,37 @@ export default function ArticuloClient() {
                 </Button>
             </Form>
 
-            <Table responsive>
-                <thead>
-                    <tr>
-                        <th>Numero</th>
-                        <th>Título</th>
-                        <th>Cuerpo</th>
-                        <th>Autor</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {articulos.map((articulo) => (
-                        <tr key={articulo.id}>
-                            <td>{articulo.id}</td>
-                            <td>{articulo.titulo}</td>
-                            <td>{articulo.cuerpo}</td>
-                            <td>{articulo.autor}</td>
-                            <td>
-                                <Button variant="primary" onClick={() => startEdit(articulo)}>
-                                    Editar
-                                </Button>
-                                <Button variant="danger" onClick={() => handleDelete(articulo.id)}>
-                                    Eliminar
-                                </Button>
-                            </td>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Table responsive bordered>
+                    <thead>
+                        <tr>
+                            <th>Numero</th>
+                            <th>Título</th>
+                            <th>Cuerpo</th>
+                            <th>Autor</th>
+                            <th>Acciones</th>
                         </tr>
-                    ))}
-                </tbody>
-            </Table>
-        </Container>
+                    </thead>
+                    <tbody>
+                        {articulos.map((articulo) => (
+                            <tr key={articulo.id}>
+                                <td>{articulo.id}</td>
+                                <td>{articulo.titulo}</td>
+                                <td>{articulo.cuerpo}</td>
+                                <td>{articulo.autor}</td>
+                                <td>
+                                    <Button variant="primary" onClick={() => startEdit(articulo)}>
+                                        Editar
+                                    </Button>
+                                    <Button variant="danger" onClick={() => handleDelete(articulo.id)}>
+                                        Eliminar
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
+            </div>
+        </div>
     );
 }
