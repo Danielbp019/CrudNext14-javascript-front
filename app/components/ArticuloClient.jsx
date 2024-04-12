@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react';
-import { Button, Form, Table, Modal } from 'react-bootstrap';
+import { Button, Form, Table } from 'react-bootstrap';
 import ArticuloServer from './ArticuloServer';
 
 export default function ArticuloClient() {
@@ -91,6 +91,8 @@ export default function ArticuloClient() {
                         placeholder="Ingrese el título"
                         value={titulo}
                         onChange={(e) => setTitulo(e.target.value)}
+                        minLength={5}
+                        maxLength={200}
                     />
                 </Form.Group>
 
@@ -102,6 +104,8 @@ export default function ArticuloClient() {
                         placeholder="Ingrese el cuerpo"
                         value={cuerpo}
                         onChange={(e) => setCuerpo(e.target.value)}
+                        minLength={5}
+                        maxLength={200}
                     />
                 </Form.Group>
 
@@ -112,6 +116,8 @@ export default function ArticuloClient() {
                         placeholder="Ingrese el autor"
                         value={autor}
                         onChange={(e) => setAutor(e.target.value)}
+                        minLength={5}
+                        maxLength={200}
                     />
                 </Form.Group>
 
