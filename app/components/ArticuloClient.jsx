@@ -34,9 +34,8 @@ export default function ArticuloClient() {
                 setTitulo('');
                 setCuerpo('');
                 setAutor('');
-            } else {
-                console.error('Error al crear el artículo:', response.message);
             }
+
         } catch (error) {
             console.error('Error al crear el artículo:', error);
         }
@@ -55,9 +54,8 @@ export default function ArticuloClient() {
                     setAutor('');
                     setIsEditing(false);
                     setEditingId(null);
-                } else {
-                    console.error('Error al actualizar el artículo:', response.message);
                 }
+
             } catch (error) {
                 console.error('Error al actualizar el artículo:', error);
             }
