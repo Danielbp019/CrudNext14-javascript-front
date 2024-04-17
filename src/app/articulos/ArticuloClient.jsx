@@ -1,7 +1,9 @@
 'use client'
+// ArticuloClient.jsx
 import React, { useState, useEffect } from 'react';
 import ArticuloServer from './ArticuloServer';
 import ReactPaginate from 'react-paginate';
+import { Table, Button, Modal, Form } from 'react-bootstrap';
 
 export default function ArticuloClient() {
     const [articulos, setArticulos] = useState([]);
@@ -10,6 +12,27 @@ export default function ArticuloClient() {
     const [autor, setAutor] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [editingId, setEditingId] = useState(null);
+
+    //Modal
+    const [show, setShow] = useState(false);
+    //Cerrar modal y limpiar campos
+    const handleClose = () => {
+        setShow(false);
+        limpiarCampos();
+    };
+
+    //Mostrar modal y limpiar campos
+    const handleShow = () => {
+        setShow(true);
+        limpiarCampos();
+    };
+
+    const limpiarCampos = () => {
+        setTitulo('');
+        setCuerpo('');
+        setAutor('');
+    };
+
     // Paginacion
     const [pageNumber, setPageNumber] = useState(0);
     const articlesPerPage = 5;
@@ -24,13 +47,13 @@ export default function ArticuloClient() {
                 <td>{articulo.cuerpo}</td>
                 <td>{articulo.autor}</td>
                 <td>
-                    <button type="button" className="btn btn-primary" onClick={() => startEdit(articulo)} data-bs-toggle="modal" data-bs-target="#crearyactModal">
+                    <Button variant="primary" onClick={() => startEdit(articulo)} data-bs-toggle="modal" data-bs-target="#crearyactModal">
                         Editar
-                    </button>
+                    </Button>
                     {" "}
-                    <button type="button" className="btn btn-danger" onClick={() => handleDelete(articulo.id)}>
+                    <Button variant="danger" onClick={() => handleDelete(articulo.id)}>
                         Eliminar
-                    </button>
+                    </Button>
                 </td>
             </tr>
         ));
@@ -60,9 +83,7 @@ export default function ArticuloClient() {
             if (response.success) {
                 setArticulos([...articulos, response.articulo]);
                 // Limpiar los campos después de la creación
-                setTitulo('');
-                setCuerpo('');
-                setAutor('');
+                handleClose();
             }
 
         } catch (error) {
@@ -78,9 +99,7 @@ export default function ArticuloClient() {
                 if (response.success) {
                     setArticulos(articulos.map(art => art.id === editingId ? response.articulo : art));
                     // Restablecer el formulario y salir del modo de edición
-                    setTitulo('');
-                    setCuerpo('');
-                    setAutor('');
+                    handleClose();
                     setIsEditing(false);
                     setEditingId(null);
                 }
@@ -100,13 +119,8 @@ export default function ArticuloClient() {
         }
     };
 
-    const limpiarCampos = () => {
-        setTitulo('');
-        setCuerpo('');
-        setAutor('');
-    };
-
     const startEdit = (articulo) => {
+        handleShow();
         setEditingId(articulo.id);
         setTitulo(articulo.titulo);
         setCuerpo(articulo.cuerpo);
@@ -116,89 +130,83 @@ export default function ArticuloClient() {
 
     return (
         <section>
-            <div className="modal fade" id="crearyactModal" tabIndex="-1" aria-labelledby="crearyactModalLabel" aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h1 className="modal-title fs-5" id="crearyactModalLabel">{isEditing ? 'Actualizar articulo' : 'Crear articulo'}</h1>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <form onSubmit={isEditing ? handleUpdate : handleCreate}>
-                                <div className="mb-3">
-                                    <label htmlFor="formTitulo" className="form-label">Título</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        id="formTitulo"
-                                        placeholder="Ingrese el título"
-                                        value={titulo}
-                                        onChange={(e) => setTitulo(e.target.value)}
-                                        minLength={5}
-                                        maxLength={200}
-                                    />
-                                </div>
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{isEditing ? 'Actualizar articulo' : 'Crear articulo'}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form onSubmit={isEditing ? handleUpdate : handleCreate}>
 
-                                <div className="mb-3">
-                                    <label htmlFor="formCuerpo" className="form-label">Cuerpo</label>
-                                    <textarea
-                                        className="form-control"
-                                        id="formCuerpo"
-                                        rows={3}
-                                        placeholder="Ingrese el cuerpo"
-                                        value={cuerpo}
-                                        onChange={(e) => setCuerpo(e.target.value)}
-                                        minLength={5}
-                                        maxLength={200}
-                                    />
-                                </div>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Título</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Ingrese el título"
+                                value={titulo}
+                                onChange={(e) => setTitulo(e.target.value)}
+                                minLength={5}
+                                maxLength={200}
+                                required
+                            />
+                        </Form.Group>
 
-                                <div className="mb-3">
-                                    <label htmlFor="formAutor" className="form-label">Autor</label>
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        id="formAutor"
-                                        placeholder="Ingrese el autor"
-                                        value={autor}
-                                        onChange={(e) => setAutor(e.target.value)}
-                                        minLength={5}
-                                        maxLength={200}
-                                    />
-                                </div>
-                                <br />
+                        <Form.Group className="mb-3">
+                            <Form.Label>Cuerpo</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                placeholder="Ingrese el cuerpo"
+                                value={cuerpo}
+                                onChange={(e) => setCuerpo(e.target.value)}
+                                minLength={5}
+                                maxLength={200}
+                                required
+                            />
+                        </Form.Group>
 
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={() => limpiarCampos()}>Cerrar</button>
-                                    <button type="submit" className="btn btn-primary" data-bs-dismiss="modal">{isEditing ? 'Actualizar' : 'Crear'}</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Autor</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Ingrese el autor"
+                                value={autor}
+                                onChange={(e) => setAutor(e.target.value)}
+                                minLength={5}
+                                maxLength={200}
+                                required
+                            />
+                        </Form.Group>
+                        <br />
 
-            <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearyactModal" onClick={() => limpiarCampos()}>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleClose}>Cerrar</Button>
+                            <Button variant="primary" type="submit">{isEditing ? 'Actualizar' : 'Crear'}</Button>
+                        </Modal.Footer>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+
+            <Button variant="primary" onClick={handleShow}>
                 Crear articulo
-            </button>
+            </Button>
             <br />
             <hr />
 
             <div style={{ display: 'flex', justifyContent: 'center' }} >
-                <table className="table table-bordered table-striped table-hover table-responsive">
+                <Table striped bordered hover responsive>
                     <thead>
                         <tr style={{ textAlign: "center" }}>
-                            <th scope="col">Numero</th>
-                            <th scope="col">Título</th>
-                            <th scope="col">Cuerpo</th>
-                            <th scope="col">Autor</th>
-                            <th scope="col">Acciones</th>
+                            <th>Numero</th>
+                            <th>Título</th>
+                            <th>Cuerpo</th>
+                            <th>Autor</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody style={{ textAlign: "center" }}>
                         {displayArticles}
                     </tbody>
-                </table>
+                </Table>
             </div>
             {/* Controles de paginacion */}
             <ReactPaginate
@@ -214,6 +222,8 @@ export default function ArticuloClient() {
                 nextClassName={"page-item"}
                 nextLinkClassName={"page-link"}
                 activeClassName={"active"}
+                breakClassName={"page-item"}
+                breakLinkClassName={"page-link"}
             />
         </section>
     );

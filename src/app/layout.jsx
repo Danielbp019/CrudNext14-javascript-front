@@ -1,3 +1,5 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 export const metadata = {
   title: "Creado con Next 14 y javascript",
   description: "CRUD Frontend javascript",
