@@ -15,9 +15,12 @@ export default function ArticuloClient() {
 
     //Modal
     const [show, setShow] = useState(false);
+
     //Cerrar modal y limpiar campos
     const handleClose = () => {
         setShow(false);
+        setIsEditing(false);
+        setEditingId(null);
         limpiarCampos();
     };
 
@@ -100,8 +103,6 @@ export default function ArticuloClient() {
                     setArticulos(articulos.map(art => art.id === editingId ? response.articulo : art));
                     // Restablecer el formulario y salir del modo de edición
                     handleClose();
-                    setIsEditing(false);
-                    setEditingId(null);
                 }
 
             } catch (error) {
